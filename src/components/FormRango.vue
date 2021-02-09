@@ -12,26 +12,36 @@
                     <v-autocomplete :rules="[v => !!v]" v-model="pregunta.id_pregunta" autocomplete="off" :items="preguntas" item-text="nombre" item-value="id" hide-details outlined label="Pregunta"></v-autocomplete>
                 </v-col>
 
-                <v-col md="2">
-                    <v-text-field :rules="[v => !!v]" v-model="pregunta.bien" autocomplete="off" hide-details outlined label="Bien"></v-text-field>
+                
+
+            </v-row>
+
+            <v-row v-for="(extremo, index) in extremos" :key="index">
+                <v-col md="3">
+                    {{ extremo.inferior }}
+                </v-col>
+                <v-col md="1">
+                    <v-text-field v-model="extremo.uno" autocomplete="off" hide-details outlined ></v-text-field>
                 </v-col>
 
-                <v-col md="2">
-                    <v-text-field :rules="[v => !!v]" v-model="pregunta.regular" autocomplete="off" hide-details outlined label="Regular"></v-text-field>
+                <v-col md="1">
+                    <v-text-field v-model="extremo.dos" autocomplete="off" hide-details outlined ></v-text-field>
                 </v-col>
 
-                <v-col md="2">
-                    <v-text-field :rules="[v => !!v]" v-model="pregunta.mal" autocomplete="off" hide-details outlined label="Mal"></v-text-field>
+                <v-col md="1">
+                    <v-text-field v-model="extremo.tres" autocomplete="off" hide-details outlined ></v-text-field>
                 </v-col>
 
-                <v-col md="2">
-                    <v-text-field :rules="[v => !!v]" v-model="pregunta.no_encara" autocomplete="off" hide-details outlined label="No encara el problema"></v-text-field>
+                <v-col md="1">
+                    <v-text-field v-model="extremo.cuatro" autocomplete="off" hide-details outlined ></v-text-field>
                 </v-col>
 
-                <v-col md="2">
-                    <v-text-field :rules="[v => !!v]" v-model="pregunta.ns_nr" autocomplete="off" hide-details outlined label="NS/NR"></v-text-field>
+                <v-col md="1">
+                    <v-text-field v-model="extremo.cinco" autocomplete="off" hide-details outlined ></v-text-field>
                 </v-col>
-
+                 <v-col align="end" md="3">
+                    {{ extremo.superior }}
+                </v-col>
             </v-row>
 
             <v-row>
@@ -69,7 +79,8 @@
                 pregunta: {
 
                 },
-                valid: true
+                valid: true,
+                extremos: []
             }
         },
         methods: {
@@ -88,6 +99,12 @@
 
                     this.codigos = response.data.codigos
                     this.preguntas = response.data.preguntas
+                    
+                    if (!this.idItem) {
+                        
+                        this.extremos = response.data.extremos
+
+                    }
 
                 })
 
@@ -98,15 +115,17 @@
 
                     if (this.valid) {
                         
+                        this.pregunta.extremos = this.extremos
+
                         const data = {
-                            url: 'registrar_ponderacion.php',
+                            url: 'registrar_rango.php',
                             data: this.pregunta
                         }
 
                         request.post(data)
                         // eslint-disable-next-line no-unused-vars
                         .then((response) => {
-
+                            
                             this.$emit('updateTable')
                             this.$emit('closeModal')
                             this.pregunta = {}
@@ -119,7 +138,7 @@
 
             },
             detalle(){
-
+                
                 const data = {
                     url: 'obtener_detalle.php',
                     data: {
@@ -127,21 +146,23 @@
                         tabla: this.tabla
                     }
                 }
-                console.log(data);
 
                 request.post(data)
                 .then((response) => {
                     this.pregunta = response.data
+                    this.extremos = response.data.extremos
                 })
 
             },
             editar(){
 
+                this.pregunta.extremos = this.extremos
+
                 const data = {
-                    url: 'editar_ponderacion.php',
+                    url: 'editar_rango.php',
                     data: this.pregunta
                 }
-
+                
                 request.post(data)
                 // eslint-disable-next-line no-unused-vars
                 .then((response) => {
@@ -167,7 +188,7 @@
                 if (val) {
                     this.detalle()
                 }else{
-                    console.log('empty');
+                    this.obtener_datos_form()
                     this.pregunta = {}
                     this.$refs.form.resetValidation()
                     this.valid = true
@@ -178,15 +199,18 @@
         mounted(){
 
             if (this.idItem) {
+                this.obtener_datos_form()
                 this.detalle()
+                
             }else{
 
+                this.obtener_datos_form()
                 this.pregunta = {}
                 this.$refs.form.resetValidation()
                 this.valid = true
 
             }
-            this.obtener_datos_form()
+            //this.obtener_datos_form()
 
         }
     

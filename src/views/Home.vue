@@ -99,7 +99,7 @@
             text: "Ponderación"
           },
           {
-            id: "",
+            id: "rango",
             text: "Rango"
           }
         ],
@@ -111,7 +111,6 @@
       mostrar_modal(){
 
         this.form = this.tabla
-        this.idItem = '1'
         this.idItem = null
         this.$refs.modal.show()
 

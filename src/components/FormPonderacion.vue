@@ -127,10 +127,10 @@
                         tabla: this.tabla
                     }
                 }
-                console.log(data);
 
                 request.post(data)
                 .then((response) => {
+                    console.log(response.data);
                     this.pregunta = response.data
                 })
 
