@@ -1,7 +1,7 @@
 <template>
     <div>
 
-        <v-form ref="form" v-model="valid" @submit.prevent="registrar()">
+        <v-form ref="form" v-model="valid" @submit.prevent="!idItem ? registrar() : editar()">
             <v-row class="mt-4">
 
                 <v-col md="4">
@@ -24,7 +24,7 @@
 
             <v-row>
                 <v-col class="text-center">
-                    <v-btn class="mr-2" color="secondary">
+                    <v-btn @click="$emit('closeModal')" class="mr-2" color="secondary">
                         CANCELAR
                     </v-btn>
 
@@ -42,10 +42,17 @@
 <script>
 
     import request from '@/functions/request.js'
+    // eslint-disable-next-line no-unused-vars
     import alert from '@/functions/alert.js'
 
     export default {
-        
+         props: {
+            idItem: {
+                type: String,
+                default: null
+            },
+            tabla: String
+        },
         data(){
             return{
                 preguntas: [],
@@ -86,20 +93,92 @@
                     }
 
                     request.post(data)
+                    // eslint-disable-next-line no-unused-vars
                     .then((response) => {
 
-                        alert.show_alert(response.data)
-                        console.log(response.data);
+                        // alert.show_alert(response.data)
+                        // .then(() => {
+                            
+                        // })
 
+                        this.$emit('updateTable')
+                        this.$emit('closeModal')
+                        this.pregunta = {}
+                        this.$refs.form.resetValidation()
+                        this.valid = true
+                        
                     })
 
                 }
 
+            },
+            detalle(){
+
+                const data = {
+                    url: 'obtener_detalle.php',
+                    data: {
+                        id: this.idItem,
+                        tabla: this.tabla
+                    }
+                }
+
+                request.post(data)
+                .then((response) => {
+                    this.pregunta = response.data
+                })
+
+            },
+            editar(){
+
+                const data = {
+                    url: 'editar_valoracion.php',
+                    data: this.pregunta
+                }
+
+                request.post(data)
+                // eslint-disable-next-line no-unused-vars
+                .then((response) => {
+
+                    // alert.show_alert(response.data)
+                    // .then((result) => {
+
+                    //     if (result) {
+                            
+                    //     }
+
+                    // })
+                    this.$emit('updateTable')
+                    this.$emit('closeModal')
+                })
+
             }
 
         },
+        watch: {
+            idItem: function(val){
+
+                if (val) {
+                    this.detalle()
+                }else{
+                    console.log('empty');
+                    this.pregunta = {}
+                    this.$refs.form.resetValidation()
+                    this.valid = true
+                }
+
+            }
+        },
         mounted(){
 
+            if (this.idItem) {
+                this.detalle()
+            }else{
+
+                this.pregunta = {}
+                this.$refs.form.resetValidation()
+                this.valid = true
+
+            }
             this.obtener_datos_form()
 
         }

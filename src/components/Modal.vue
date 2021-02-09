@@ -4,11 +4,12 @@
         <v-dialog
             v-model="dialog"
             width="900"
+            @click:outside="$emit('closeModal')"
         >
 
             <v-card>
                 <v-card-title class="headline grey lighten-2">
-                Agregar Resultados
+                Resultados
                 </v-card-title>
 
                 <v-card-text>
@@ -36,6 +37,11 @@
         show(){
 
             this.dialog = true
+
+        },
+        close(){
+
+          this.dialog = false
 
         }
 
