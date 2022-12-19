@@ -1,4 +1,6 @@
-# app-encuesta-muni
+# Aplicación de Encuestas Muni
+
+Aplicación enfocada en la realización de encuestas de valoración de los vecinos hacia el desempeño del alcalde. 
 
 ## Project setup
 ```
